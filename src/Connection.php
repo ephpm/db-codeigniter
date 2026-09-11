@@ -364,8 +364,14 @@ class Connection extends BaseConnection
     /**
      * Generates a platform-specific query string so that the column names can
      * be fetched. Rides litewire's `SHOW COLUMNS` emulation.
+     *
+     * The parameter is left untyped to match `BaseConnection::_listColumns()`,
+     * which declares no parameter type (adding `string` would narrow it and
+     * PHP rejects the override).
+     *
+     * @param string $table
      */
-    protected function _listColumns(string $table = ''): string
+    protected function _listColumns($table = ''): string
     {
         return 'SHOW COLUMNS FROM ' . $this->protectIdentifiers($table, true, null, false);
     }

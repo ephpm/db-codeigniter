@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ephpm\Db\CodeIgniter\Tests;
 
 use Ephpm\Db\CodeIgniter\SqlitePdoDbOps;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -68,9 +69,7 @@ final class SqlitePdoDbOpsTest extends TestCase
         self::assertNull($row['z']);
     }
 
-    /**
-     * @dataProvider errorCases
-     */
+    #[DataProvider('errorCases')]
     public function testErrorMappingMirrorsLitewire(string $needleSql, int $expectedErrno, string $expectedSqlstate): void
     {
         $ops = $this->ops();

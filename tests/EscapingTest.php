@@ -6,6 +6,7 @@ namespace Ephpm\Db\CodeIgniter\Tests;
 
 use Ephpm\Db\CodeIgniter\Connection;
 use Ephpm\Db\CodeIgniter\SqlitePdoDbOps;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -27,9 +28,8 @@ final class EscapingTest extends TestCase
      * (`\'`): litewire's tenant-path parser rejects `\'` as malformed SQL
      * (github.com/ephpm/db-wordpress issue #1). Backslashes are still doubled
      * so a string can never be broken out of.
-     *
-     * @dataProvider escapeStringCases
      */
+    #[DataProvider('escapeStringCases')]
     public function testEscapeStringMatchesTheBridgeContract(string $input, string $expected): void
     {
         self::assertSame($expected, $this->connection()->escapeString($input));
