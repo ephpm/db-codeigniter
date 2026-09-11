@@ -15,7 +15,7 @@ use stdClass;
  */
 final class ResultTest extends TestCase
 {
-    private function result(ResultId $resultId): Result
+    private function makeResult(ResultId $resultId): Result
     {
         $connID = $resultId; // the driver's "connID" is the ops handle; unused by Result
 
@@ -38,7 +38,7 @@ final class ResultTest extends TestCase
 
     public function testFieldMetadata(): void
     {
-        $result = $this->result($this->populated());
+        $result = $this->makeResult($this->populated());
 
         self::assertSame(2, $result->getFieldCount());
         self::assertSame(['id', 'name'], $result->getFieldNames());
@@ -52,7 +52,7 @@ final class ResultTest extends TestCase
 
     public function testGetResultArray(): void
     {
-        $result = $this->result($this->populated());
+        $result = $this->makeResult($this->populated());
 
         self::assertSame(2, $result->getNumRows());
         self::assertSame(
@@ -66,7 +66,7 @@ final class ResultTest extends TestCase
 
     public function testGetResultObject(): void
     {
-        $result = $this->result($this->populated());
+        $result = $this->makeResult($this->populated());
         $rows   = $result->getResultObject();
 
         self::assertContainsOnlyInstancesOf(stdClass::class, $rows);
@@ -76,7 +76,7 @@ final class ResultTest extends TestCase
 
     public function testDataSeekResetsIteration(): void
     {
-        $result = $this->result($this->populated());
+        $result = $this->makeResult($this->populated());
 
         self::assertSame(['id' => 1, 'name' => 'alice'], $result->getRowArray(0));
         self::assertSame(['id' => 2, 'name' => 'bob'], $result->getRowArray(1));
@@ -84,7 +84,7 @@ final class ResultTest extends TestCase
 
     public function testEmptyResultStillReportsColumns(): void
     {
-        $result = $this->result(new ResultId([], [['name' => 'cnt', 'type' => null]]));
+        $result = $this->makeResult(new ResultId([], [['name' => 'cnt', 'type' => null]]));
 
         self::assertSame(0, $result->getNumRows());
         self::assertSame(1, $result->getFieldCount());
