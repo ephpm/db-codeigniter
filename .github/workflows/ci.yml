@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: Tests (PHP ${{ matrix.php }}, CI4 ${{ matrix.ci }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ["8.2", "8.3", "8.4"]
+        ci: ["^4.4", "^4.5"]
+        exclude:
+          # CodeIgniter 4.4 predates PHP 8.4 support.
+          - php: "8.4"
+            ci: "^4.4"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: intl, mbstring, pdo_sqlite, sqlite3
+          coverage: none
+          tools: composer:v2
+
+      - name: Cache composer
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: composer-${{ matrix.php }}-${{ matrix.ci }}-${{ hashFiles('composer.json') }}
+          restore-keys: composer-${{ matrix.php }}-${{ matrix.ci }}-
+
+      - name: Pin the CodeIgniter version for this leg
+        run: >
+          composer require --no-update --no-interaction
+          "codeigniter4/framework:${{ matrix.ci }}"
+
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-progress --no-interaction
+
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit --testdox
+
+  validate:
+    name: Validate composer.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          coverage: none
+          tools: composer:v2
+
+      # Validate the committed composer.json on a pristine checkout. This
+      # library ships no composer.lock, so validation runs on the manifest
+      # alone — deliberately separate from the test matrix, whose per-leg
+      # `composer update` writes a version-pinned lock that would otherwise
+      # trip the lock content-hash check.
+      - name: Validate composer.json
+        run: composer validate --strict
