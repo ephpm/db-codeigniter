@@ -56,7 +56,7 @@ $rows = $db->table('posts')->get()->getResultArray();
 - **PHP 8.2+**
 - **`codeigniter4/framework` ^4.4 || ^4.5** (Composer pulls this in
   automatically)
-- **ePHPm v0.6.3 or newer** (current release: v0.10.3), **with
+- **ePHPm v0.6.3 or newer** (see the [ePHPm releases](https://github.com/ephpm/ephpm/releases) for the latest version), **with
   `[db.sqlite]` configured.** The `ephpm_db_*` SAPI functions this driver
   calls first shipped in the v0.6.3 release. They are registered only when
   the embedded database is active (`[db.sqlite]` in `ephpm.toml`); without
